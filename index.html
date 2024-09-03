@@ -1,0 +1,266 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Barcode Scanning App</title>
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&display=swap" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Roboto', sans-serif;
+            background-color: #e9eff5;
+            margin: 0;
+            padding: 20px;
+            color: #333;
+        }
+
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+            background-color: #ffffff;
+            padding: 20px;
+            border-radius: 12px;
+            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.1);
+        }
+
+        h1 {
+            text-align: center;
+            color: #0056b3;
+            font-weight: 700;
+            margin-bottom: 20px;
+        }
+
+        label {
+            display: block;
+            margin-top: 10px;
+            font-weight: 500;
+            color: #555;
+        }
+
+        input {
+            width: 100%;
+            padding: 12px;
+            margin-top: 5px;
+            border-radius: 8px;
+            border: 1px solid #ccc;
+            font-size: 16px;
+        }
+
+        .button {
+            background-color: #28a745;
+            color: white;
+            padding: 12px 20px;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            font-weight: 500;
+            font-size: 16px;
+            margin-top: 15px;
+            transition: background-color 0.3s ease;
+            width: 100%;
+        }
+
+        .button:hover {
+            background-color: #218838;
+        }
+
+        .counter {
+            text-align: right;
+            margin-top: 20px;
+            font-size: 18px;
+            color: #0056b3;
+            font-weight: 500;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 20px;
+            border-radius: 8px;
+            overflow: hidden;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.05);
+        }
+
+        table, th, td {
+            border: 1px solid #ddd;
+        }
+
+        th, td {
+            padding: 12px;
+            text-align: left;
+            font-size: 16px;
+        }
+
+        th {
+            background-color: #0056b3;
+            color: white;
+        }
+
+        td {
+            background-color: #f8f9fa;
+        }
+
+        /* Responsive design */
+        @media (max-width: 600px) {
+            .container {
+                padding: 15px;
+            }
+
+            input, .button {
+                font-size: 14px;
+            }
+
+            th, td {
+                font-size: 14px;
+                padding: 10px;
+            }
+
+            .counter {
+                font-size: 16px;
+            }
+        }
+    </style>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.16.9/xlsx.full.min.js"></script>
+</head>
+
+<body>
+
+    <div class="container">
+        <h1>Kilcoy Barcode Scanning</h1>
+
+        <!-- Login Section -->
+        <div id="login-section">
+            <label for="username">Username:</label>
+            <input type="text" id="username" placeholder="Enter your username">
+
+            <label for="password">Password:</label>
+            <input type="password" id="password" placeholder="Enter your password">
+
+            <button class="button" onclick="login()">Login</button>
+        </div>
+
+        <!-- Scanning Section -->
+        <div id="scanning-section" style="display:none;">
+            <label for="date">Date:</label>
+            <input type="date" id="date">
+
+            <label for="salesOrder">Sales Order Number:</label>
+            <input type="text" id="salesOrder" placeholder="Enter Sales Order Number">
+
+            <label for="barcode">Barcode:</label>
+            <input type="text" id="barcode" placeholder="Scan Barcode" onkeydown="if(event.key === 'Enter') addBarcode()">
+
+            <button class="button" onclick="addBarcode()">Add Barcode</button>
+            <button class="button" onclick="exportToExcel(document.getElementById('salesOrder').value)">Export to Excel</button>
+
+            <div class="counter">Total Barcodes Scanned: <span id="barcodeCounter">0</span></div>
+
+            <table>
+                <thead>
+                    <tr>
+                        <th>Barcode</th>
+                        <th>Date</th>
+                        <th>Sales Order</th>
+                        <th>User ID</th>
+                    </tr>
+                </thead>
+                <tbody id="barcodeTableBody">
+                    <!-- Rows will be added here dynamically -->
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    <script>
+        let barcodes = [];
+        let loggedInUser = '';
+
+        function login() {
+            const username = document.getElementById('username').value;
+            const password = document.getElementById('password').value;
+
+            const users = [
+                { username: 'admin', password: 'password123' },
+                { username: 'KPC', password: '58595859' }
+            ];
+
+            const validUser = users.find(user => user.username === username && user.password === password);
+
+            if (validUser) {
+                loggedInUser = username;
+                document.getElementById('login-section').style.display = 'none';
+                document.getElementById('scanning-section').style.display = 'block';
+            } else {
+                alert('Invalid credentials, please try again.');
+            }
+        }
+
+        function addBarcode() {
+            const date = document.getElementById('date').value;
+            const salesOrder = document.getElementById('salesOrder').value;
+            const barcode = document.getElementById('barcode').value;
+
+            if (!date || !salesOrder || !barcode) {
+                alert('Please fill in all fields.');
+                return;
+            }
+
+            if (barcodes.includes(barcode)) {
+                alert('This barcode has already been scanned.');
+                return;
+            }
+
+            barcodes.push(barcode);
+            const tableBody = document.getElementById('barcodeTableBody');
+            const newRow = tableBody.insertRow();
+
+            newRow.insertCell(0).innerText = barcode;
+            newRow.insertCell(1).innerText = date;
+            newRow.insertCell(2).innerText = salesOrder;
+            newRow.insertCell(3).innerText = loggedInUser;
+
+            document.getElementById('barcodeCounter').innerText = barcodes.length;
+
+            document.getElementById('barcode').value = '';
+        }
+
+        function exportToExcel(salesOrder) {
+            if (barcodes.length === 0) {
+                alert("No barcodes to export.");
+                return;
+            }
+
+            const worksheet = XLSX.utils.json_to_sheet(barcodes.map(barcode => ({
+                Barcode: `'${barcode}`,
+                Date: new Date().toLocaleDateString(),
+                SalesOrder: salesOrder,
+                UserID: loggedInUser
+            })));
+
+            const workbook = XLSX.utils.book_new();
+            XLSX.utils.book_append_sheet(workbook, worksheet, "Barcodes");
+
+            const fileName = `${salesOrder}.xlsx`;
+            XLSX.writeFile(workbook, fileName);
+
+            saveToHistory(salesOrder);
+
+            barcodes = [];
+            document.getElementById('barcodeTableBody').innerHTML = '';
+            document.getElementById('barcodeCounter').innerText = '0';
+        }
+
+        function saveToHistory(salesOrder) {
+            let history = JSON.parse(localStorage.getItem('barcodeHistory')) || [];
+
+            history.push({ salesOrder, barcodes });
+            if (history.length > 20) history.shift();
+
+            localStorage.setItem('barcodeHistory', JSON.stringify(history));
+        }
+    </script>
+
+</body>
+
+</html>
