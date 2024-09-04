@@ -115,6 +115,19 @@
             background-color: #c82333;
         }
 
+        /* Search bar */
+        .search-bar {
+            margin-bottom: 15px;
+        }
+
+        .search-bar input {
+            width: 100%;
+            padding: 10px;
+            border-radius: 8px;
+            border: 1px solid #ccc;
+            font-size: 16px;
+        }
+
         /* Responsive design */
         @media (max-width: 600px) {
             .container {
@@ -169,6 +182,11 @@
             <button class="button" onclick="exportToExcel(document.getElementById('salesOrder').value)">Export to Excel</button>
 
             <div class="counter">Total Barcodes Scanned: <span id="barcodeCounter">0</span></div>
+
+            <!-- Search Bar -->
+            <div class="search-bar">
+                <input type="text" id="searchInput" placeholder="Search barcodes..." onkeyup="searchBarcodes()">
+            </div>
 
             <table>
                 <thead>
@@ -292,6 +310,20 @@
             if (history.length > 20) history.shift();
 
             localStorage.setItem('barcodeHistory', JSON.stringify(history));
+        }
+
+        function searchBarcodes() {
+            const searchInput = document.getElementById('searchInput').value.toLowerCase();
+            const rows = document.querySelectorAll('#barcodeTableBody tr');
+
+            rows.forEach(row => {
+                const barcodeCell = row.cells[0].innerText.toLowerCase();
+                if (barcodeCell.includes(searchInput)) {
+                    row.style.display = '';
+                } else {
+                    row.style.display = 'none';
+                }
+            });
         }
     </script>
 
