@@ -5,7 +5,6 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>BEEP</title>
-    </title>Barcode Entry & Efficiency Portal</title>
     <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&display=swap" rel="stylesheet">
     <style>
         body {
@@ -102,6 +101,20 @@
             background-color: #f8f9fa;
         }
 
+        .delete-btn {
+            background-color: #dc3545;
+            color: white;
+            padding: 8px;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 14px;
+        }
+
+        .delete-btn:hover {
+            background-color: #c82333;
+        }
+
         /* Responsive design */
         @media (max-width: 600px) {
             .container {
@@ -129,7 +142,7 @@
 
     <div class="container">
         <h1>BEEP</h1>
-         <h1>Barcode Entry & Efficiency Portal</h1>
+        <h1>Barcode Entry & Efficiency Portal</h1>
         <!-- Login Section -->
         <div id="login-section">
             <label for="username">Username:</label>
@@ -164,6 +177,7 @@
                         <th>Date</th>
                         <th>Sales Order</th>
                         <th>User ID</th>
+                        <th>Action</th> <!-- New column for delete button -->
                     </tr>
                 </thead>
                 <tbody id="barcodeTableBody">
@@ -221,9 +235,28 @@
             newRow.insertCell(2).innerText = salesOrder;
             newRow.insertCell(3).innerText = loggedInUser;
 
+            // Add delete button to the row
+            const deleteCell = newRow.insertCell(4);
+            const deleteButton = document.createElement('button');
+            deleteButton.innerText = 'Delete';
+            deleteButton.className = 'delete-btn';
+            deleteButton.onclick = () => deleteBarcode(barcode, newRow);
+            deleteCell.appendChild(deleteButton);
+
             document.getElementById('barcodeCounter').innerText = barcodes.length;
 
             document.getElementById('barcode').value = '';
+        }
+
+        function deleteBarcode(barcode, row) {
+            // Remove barcode from the array
+            barcodes = barcodes.filter(b => b !== barcode);
+
+            // Remove row from the table
+            row.remove();
+
+            // Update barcode counter
+            document.getElementById('barcodeCounter').innerText = barcodes.length;
         }
 
         function exportToExcel(salesOrder) {
