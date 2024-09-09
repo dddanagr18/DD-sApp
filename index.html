@@ -1,346 +1,69 @@
 <!DOCTYPE html>
 <html lang="en">
 
-  <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>BEEP</title>
-    <link href="https://fonts.googleapis.com/css2?family=Cascadia Mono Bold:wght@400;500;700&display=swap" rel="stylesheet">
-    <style>
-      body {
-        font-family: 'Helvetica Neue', Sans-Serif ;
-        background-color: #4e6c50;
-        margin: 0;
-        padding: 20px;
-        color: #333;      }
-      .container {
-        max-width: 800px;
-        margin: 0 auto;
-        background-color: #ffffff;
-        padding: 20px;
-        border-radius: 12px;
-        box-shadow: 0 8px 30px rgba(0, 0, 0, 0.1);}
-      h1 {text-align: left;
-        color: #002c3e;
-        font-weight: 1000;
-        margin-bottom: 1px;}       
-      h2 {
-        text-align: left;
-        color: #4e6c50;
-        font-weight: 1000;
-        margin-bottom: 1px;
-      }
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>BEEP</title>
+  <link href="https://fonts.googleapis.com/css2?family=Cascadia+Mono:wght@400;500;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="styles.css">
+</head>
 
-      label {
-        display: block;
-        margin-top: 10px;
-        font-weight: 500;
-        color: #000000;
-      }
+<body>
+  <div class="container">
+    <h1>BEEP</h1>
+    <h2>Barcode Entry & Efficiency Portal</h2>
+    
+    <!-- Login Section -->
+    <div id="login-section">
+      <label for="username">Username:</label>
+      <input type="text" id="username" placeholder="Enter your username">
 
-      input {
-        width: 98%;
-        padding: 50x;
-        margin-top: 5px;
-        border-radius: 8px;
-        border: 4px solid #395144;
-        font-size: 30px;}
+      <label for="password">Password:</label>
+      <input type="password" id="password" placeholder="Enter your password">
 
-      .button {
-        background-color: #002c3e;
-        color: white;
-        padding: 10px 15px;
-        border: none;
-        border-radius: 8px;
-        cursor: pointer;
-        font-weight: 1000;
-        font-size: 20px;
-        margin-top: 15px;
-        transition: background-color 0.3s ease;
-        width: 100%;
-      }
-
-      .button:hover {
-        background-color: #4e6c50;
-      }
-
-      .counter {
-        text-align: right;
-        margin-top: 20px;
-        font-size: 18px;
-        color: #0056b3;
-        font-weight: 500;
-      }
-
-      table {
-        width: 100%;
-        border-collapse: collapse;
-        margin-top: 15px;
-        border-radius: 2px;
-        overflow: hidden;
-        box-shadow: 0 4px 15px rgba(0, 0, 0, 0.05);
-      }
-
-      table,
-      th,
-      td {
-        border: 20px solid #333333;
-      }
-
-      th,
-      td {
-        padding: 12px;
-        text-align: left;
-        font-size: 15px;
-      }
-
-      th {
-        background-color: #395144;
-        color: white;
-      }
-
-      td {
-        background-color: #f8f9fa;
-      }
-
-      .delete-btn {
-        background-color: #dc3545;
-        color: white;
-        padding: 8px;
-        border: none;
-        border-radius: 8px;
-        cursor: pointer;
-        font-size: 14px;
-      }
-
-      .delete-btn:hover {
-        background-color: #950000;
-      }
-
-      /* Search bar */
-      .search-bar {
-        margin-bottom: 15px;
-      }
-
-      .search-bar input {
-        width: 98%;
-        padding: 10px;
-        border-radius: 8px;
-        border: 1px solid #ccc;
-        font-size: 16px;
-      }
-
-      /* Responsive design */
-      @media (max-width: 600px) {
-        .container {
-          padding: 15px;
-        }
-
-        input,
-        .button {
-          font-size: 14px;
-        }
-
-        th,
-        td {
-          font-size: 14px;
-          padding: 10px;
-        }
-
-        .counter {
-          font-size: 16px;
-        }
-      }
-
-    </style>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.16.9/xlsx.full.min.js"></script>
-  </head>
-
-  <body>
-
-    <div class="container">
-      <h1>BEEP</h1>
-      <h2>Barcode Entry & Efficiency Portal</h2>
-      <!-- Login Section -->
-      <div id="login-section">
-        <label for="username">Username:</label>
-        <input type="text" id="username" placeholder="Enter your username">
-
-        <label for="password">Password:</label>
-        <input type="password" id="password" placeholder="Enter your password">
-
-        <button class="button" onclick="login()">Login</button>
-      </div>
-
-      <!-- Scanning Section -->
-      <div id="scanning-section" style="display:none;">
-        <label for="date">Date:</label>
-        <input type="date" id="date">
-
-        <label for="salesOrder">Sales Order Number:</label>
-        <input type="text" id="salesOrder" placeholder="Enter Sales Order Number">
-
-        <label for="barcode">Barcode:</label>
-        <input type="text" id="barcode" placeholder="Scan Barcode" onkeydown="if(event.key === 'Enter') addBarcode()">
-
-        <button class="button" onclick="addBarcode()">Add Barcode</button>
-        <button class="button" onclick="exportToExcel(document.getElementById('salesOrder').value)">Export to Excel</button>
-
-        <div class="counter">Total Barcodes Scanned: <span id="barcodeCounter">0</span></div>
-
-        <!-- Search Bar -->
-        <div class="search-bar">
-          <input type="text" id="searchInput" placeholder="Search barcodes..." onkeyup="searchBarcodes()">
-        </div>
-
-        <table>
-          <thead>
-            <tr>
-              <th>Barcode</th>
-              <th>Date</th>
-              <th>Sales Order</th>
-              <th>User ID</th>
-              <th>Action</th> <!-- New column for delete button -->
-            </tr>
-          </thead>
-          <tbody id="barcodeTableBody">
-            <!-- Rows will be added here dynamically -->
-          </tbody>
-        </table>
-      </div>
+      <button class="button" onclick="login()">Login</button>
     </div>
 
-    <script>
-      let barcodes = [];
-      let loggedInUser = '';
+    <!-- Scanning Section -->
+    <div id="scanning-section" style="display:none;">
+      <label for="date">Date:</label>
+      <input type="date" id="date">
 
-      function login() {
-        const username = document.getElementById('username').value;
-        const password = document.getElementById('password').value;
+      <label for="salesOrder">Sales Order Number:</label>
+      <input type="text" id="salesOrder" placeholder="Enter Sales Order Number">
 
-        const users = [{
-            username: 'admin',
-            password: 'password123'
-          },
-          {
-            username: 'KPC',
-            password: '58595859'
-          }
-        ];
+      <label for="barcode">Barcode:</label>
+      <input type="text" id="barcode" placeholder="Scan Barcode" onkeydown="if(event.key === 'Enter') addBarcode()">
 
-        const validUser = users.find(user => user.username === username && user.password === password);
+      <button class="button" onclick="addBarcode()">Add Barcode</button>
+      <button class="button" onclick="exportToExcel(document.getElementById('salesOrder').value)">Export to Excel</button>
 
-        if (validUser) {
-          loggedInUser = username;
-          document.getElementById('login-section').style.display = 'none';
-          document.getElementById('scanning-section').style.display = 'block';
-        } else {
-          alert('Invalid credentials, please try again.');
-        }
-      }
+      <div class="counter">Total Barcodes Scanned: <span id="barcodeCounter">0</span></div>
 
-      function addBarcode() {
-        const date = document.getElementById('date').value;
-        const salesOrder = document.getElementById('salesOrder').value;
-        const barcode = document.getElementById('barcode').value;
+      <!-- Search Bar -->
+      <div class="search-bar">
+        <input type="text" id="searchInput" placeholder="Search barcodes..." onkeyup="searchBarcodes()">
+      </div>
 
-        if (!date || !salesOrder || !barcode) {
-          alert('Please fill in all fields.');
-          return;
-        }
+      <table>
+        <thead>
+          <tr>
+            <th>Barcode</th>
+            <th>Date</th>
+            <th>Sales Order</th>
+            <th>User ID</th>
+            <th>Action</th>
+          </tr>
+        </thead>
+        <tbody id="barcodeTableBody">
+        </tbody>
+      </table>
+    </div>
+  </div>
 
-        if (barcodes.includes(barcode)) {
-          alert('This barcode has already been scanned.');
-          return;
-        }
-
-        barcodes.push(barcode);
-        const tableBody = document.getElementById('barcodeTableBody');
-        const newRow = tableBody.insertRow();
-
-        newRow.insertCell(0).innerText = barcode;
-        newRow.insertCell(1).innerText = date;
-        newRow.insertCell(2).innerText = salesOrder;
-        newRow.insertCell(3).innerText = loggedInUser;
-
-        // Add delete button to the row
-        const deleteCell = newRow.insertCell(4);
-        const deleteButton = document.createElement('button');
-        deleteButton.innerText = 'Delete';
-        deleteButton.className = 'delete-btn';
-        deleteButton.onclick = () => deleteBarcode(barcode, newRow);
-        deleteCell.appendChild(deleteButton);
-
-        document.getElementById('barcodeCounter').innerText = barcodes.length;
-
-        document.getElementById('barcode').value = '';
-      }
-
-      function deleteBarcode(barcode, row) {
-        // Remove barcode from the array
-        barcodes = barcodes.filter(b => b !== barcode);
-
-        // Remove row from the table
-        row.remove();
-
-        // Update barcode counter
-        document.getElementById('barcodeCounter').innerText = barcodes.length;
-      }
-
-      function exportToExcel(salesOrder) {
-        if (barcodes.length === 0) {
-          alert("No barcodes to export.");
-          return;
-        }
-
-        const worksheet = XLSX.utils.json_to_sheet(barcodes.map(barcode => ({
-          Barcode: `'${barcode}`,
-          Date: new Date().toLocaleDateString(),
-          SalesOrder: salesOrder,
-          UserID: loggedInUser
-        })));
-
-        const workbook = XLSX.utils.book_new();
-        XLSX.utils.book_append_sheet(workbook, worksheet, "Barcodes");
-
-        const fileName = `${salesOrder}.xlsx`;
-        XLSX.writeFile(workbook, fileName);
-
-        saveToHistory(salesOrder);
-
-        barcodes = [];
-        document.getElementById('barcodeTableBody').innerHTML = '';
-        document.getElementById('barcodeCounter').innerText = '0';
-      }
-
-      function saveToHistory(salesOrder) {
-        let history = JSON.parse(localStorage.getItem('barcodeHistory')) || [];
-
-        history.push({
-          salesOrder,
-          barcodes
-        });
-        if (history.length > 20) history.shift();
-
-        localStorage.setItem('barcodeHistory', JSON.stringify(history));
-      }
-
-      function searchBarcodes() {
-        const searchInput = document.getElementById('searchInput').value.toLowerCase();
-        const rows = document.querySelectorAll('#barcodeTableBody tr');
-
-        rows.forEach(row => {
-          const barcodeCell = row.cells[0].innerText.toLowerCase();
-          if (barcodeCell.includes(searchInput)) {
-            row.style.display = '';
-          } else {
-            row.style.display = 'none';
-          }
-        });
-      }
-
-    </script>
-
-  </body>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.16.9/xlsx.full.min.js"></script>
+  <script src="script.js"></script>
+</body>
 
 </html>
